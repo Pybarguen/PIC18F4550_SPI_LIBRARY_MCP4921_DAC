@@ -9,7 +9,7 @@
 #pragma config USBDIV = 2       // USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes from the 96 MHz PLL divided by 2)
 
 // CONFIG1H
-#pragma config FOSC = XTPLL_XT  // Oscillator Selection bits (XT oscillator, PLL enabled (XTPLL))
+#pragma config FOSC = XT_XT     // Oscillator Selection bits (XT oscillator (XT))
 #pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
 #pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
@@ -68,15 +68,27 @@
 // #pragma config statements should precede project file includes.
 // Use project enums instead of #define for ON and OFF.
 
+// #pragma config statements should precede project file includes.
+// Use project enums instead of #define for ON and OFF.
+#define CCS PORTBbits.RB2
+
+#define _XTAL_FREQ 4000000
 #include <xc.h>
 #include "Pic18f4550_SPI_master_library.h"
-#define _XTAL_FREQ 48000000
+
 
 void main(void) {
- TRISB = 0X00;//we are going to use the LATB for see the result of SSPBUF register
+
  Spi_init();
- Spi_mode(CPOL_0_CPHA_1);
- Spi_clock_mode(SPI_MASTER_CLOCK_DIV_16);
+ Spi_mode(CPOL_0_CPHA_0);
+ Spi_clock_mode(SPI_MASTER_CLOCK_DIV_4);
+ TRISBbits.RB2 = 0;
+ CCS = 1;
+ while(1)
+ {
+  
+      write_byte_spi(40959);
+ }
  
  
 }

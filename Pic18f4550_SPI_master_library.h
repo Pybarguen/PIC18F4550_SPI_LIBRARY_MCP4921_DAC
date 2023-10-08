@@ -30,7 +30,7 @@
 // more than once.  
 #ifndef XC_HEADER_TEMPLATE_H
 #define	XC_HEADER_TEMPLATE_H
-
+#include <xc.h> // include processor files - each processor file is guarded. 
 
 /*SPI modes you can see how the SPI modes work here
  https://en.wikipedia.org/wiki/Serial_Peripheral_Interface*/
@@ -51,7 +51,7 @@ enum SPI_MODES{
      
      
  };       
-#include <xc.h> // include processor files - each processor file is guarded. 
+
            
            
            
@@ -61,7 +61,7 @@ void Spi_init()
     TRISCbits.RC7 = 0;//Pin SDO
     TRISBbits.RB0 = 1;//Pin SDI
     TRISBbits.RB1 = 0;//Pin SCK
-    TRISBbits.RB2 = 0;//Slave Select !CC
+    
     SSPCON1bits.SSPEN = 1;//SPI Enable
 }
 
@@ -98,9 +98,66 @@ void Spi_mode(enum SPI_MODES data)
 void Spi_clock_mode(enum Spi_master_clock_modes data)
 
 {
-  ;;  
+    if(data == SPI_MASTER_CLOCK_DIV_4)
+    {
+        
+      SSPM0 = 0;
+      SSPM1 = 0;
+      SSPM2 = 0;
+      SSPM3 = 0;
+      
+      
+    }
+    
+      if(data == SPI_MASTER_CLOCK_DIV_16)
+    {
+        
+      SSPM0 = 1;
+      SSPM1 = 0;
+      SSPM2 = 0;
+      SSPM3 = 0;
+      
+      
+    }
+    
+       if(data == SPI_MASTER_CLOCK_DIV_64)
+    {
+        
+      SSPM0 = 0;
+      SSPM1 = 1;
+      SSPM2 = 0;
+      SSPM3 = 0;
+      
+      
+    }
+    
+        if(data == SPI_MASTER_CLOCK_DI_TMR2_2)
+    {
+        
+      SSPM0 = 1;
+      SSPM1 = 1;
+      SSPM2 = 0;
+      SSPM3 = 0;
+      
+      
+    }
+    
     
 }
 
+void write_byte_spi(int dato)
+{
+    
+       CCS  = 0;//Activo el exclavo CC
+        __delay_us(10);  
+     SSPBUF = (dato>>8) & 0xFF;//Parte alta del dato     
+        __delay_us(10);  
+       SSPBUF =  dato & 0xFF;//Parte baja  del dato  
+       __delay_us(10); 
+       CCS  = 1;//Activo el exclavo CC
+      
+      
+    
+}
 #endif	/* XC_HEADER_TEMPLATE_H */
 
