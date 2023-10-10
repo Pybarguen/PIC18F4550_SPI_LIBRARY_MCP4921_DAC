@@ -71,11 +71,13 @@
 // #pragma config statements should precede project file includes.
 // Use project enums instead of #define for ON and OFF.
 #define CCS PORTBbits.RB2
-
+#define Led LATBbits.LATB3
 #define _XTAL_FREQ 4000000
 #include <xc.h>
 #include "Pic18f4550_SPI_master_library.h"
 
+
+//Senoidal signal array in program memory
 int *const p[322] = {
     127, 129, 132, 134, 137, 139, 142, 144, 
 147, 149, 152, 154, 157, 159, 161, 164, 
@@ -116,20 +118,58 @@ int *const p[322] = {
 107, 109, 112, 114, 117, 119, 122, 124, 127
 };
 
+int i = 0;
+
+
+void __interrupt(high_priority) tcInt(void)
+{
+    if (TMR0IE && TMR0IF) {  // any timer 0 interrupts?
+        
+        write_byte_spi(p[i]);
+        TMR0L = 0;
+         TMR0IF=0;       
+         i += 1;
+         if(i>=322)
+         {
+             i = 0;
+         }
+        
+
+       
+    }
+    /*
+   if (TMR1IE && TMR1IF) {  // any timer 1 interrupts?
+        TMR1IF=0;
+        tick_count += 100;
+    }
+     * */
+    // process other interrupt sources here, if required
+    return;
+}
+
 void main(void) {
 
- Spi_init();
- Spi_mode(CPOL_0_CPHA_0);
- Spi_clock_mode(SPI_MASTER_CLOCK_DIV_4);
- TRISBbits.RB2 = 0;
- CCS = 1;
+    
+  //TMR0
+    //Activacion de interrupcion TMR0
+    INTCON = 0b10100000;
+    T0CON =  0b11001000; 
+    RCONbits.IPEN = 0;//Desactivado los niveles de interrupcion
+    TMR0L = 0;
+    
+  //SPI
+   Spi_init();//start spi interface
+   Spi_mode(CPOL_0_CPHA_0);//SPI mode 0 0 
+   Spi_clock_mode(SPI_MASTER_CLOCK_DIV_4);//SPI clock = FOSC/4 
+   TRISBbits.RB2 = 0;//SLAVE control PIN
+   TRISBbits.RB3 = 0;//output for TMR0 control
+   CCS = 1;//Slave control PIN
+ 
+ 
+ 
  while(1)
  {
-     for(int i =0; i<=322; i++)
-     {
-      write_byte_spi(p[i]);
-        
-     }
+     ;;
  }
  
  
