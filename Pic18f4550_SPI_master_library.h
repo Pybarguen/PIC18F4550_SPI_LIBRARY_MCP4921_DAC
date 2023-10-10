@@ -150,9 +150,10 @@ void write_byte_spi(int dato)
     
        CCS  = 0;//Activo el exclavo CC
         __delay_us(10);  
-     SSPBUF = (dato>>8) & 0xFF;//Parte alta del dato     
+     //SSPBUF = (dato>>8) & 0xFF;//Parte alta del dato    
+        SSPBUF = 0x30;
         __delay_us(10);  
-       SSPBUF =  dato & 0xFF;//Parte baja  del dato  
+       SSPBUF =  dato;
        __delay_us(10); 
        CCS  = 1;//Activo el exclavo CC
       
