@@ -125,7 +125,7 @@ void __interrupt(high_priority) tcInt(void)
 {
     if (TMR0IE && TMR0IF) {  // any timer 0 interrupts?
         
-        write_byte_spi(p[i]);
+       write_8bit_DAC(p[i]);
         TMR0L = 0;
          TMR0IF=0;       
          i += 1;

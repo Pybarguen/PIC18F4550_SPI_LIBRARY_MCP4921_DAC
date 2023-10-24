@@ -145,7 +145,7 @@ void Spi_clock_mode(enum Spi_master_clock_modes data)
     
 }
 
-void write_byte_spi(int dato)
+void write_8bit_DAC(int dato)
 {
     
        CCS  = 0;//Activo el exclavo CC
